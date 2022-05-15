@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Dto\UserDto;
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -37,6 +38,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\Column(type="string")
      */
     private $password;
+
+    /**
+     * @ORM\Column(type="float")
+     */
+    private $balance;
 
     public function getId(): ?int
     {
@@ -107,6 +113,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public static function fromDto(UserDto $userDto): self
+    {
+        $user = new self();
+
+        $user->setEmail($userDto->username);
+        $user->setRoles(["ROLE_USER"]);
+        $user->setPassword($userDto->password);
+
+        return $user;
+    }
+
     /**
      * Returning a salt is only needed, if you are not using a modern
      * hashing algorithm (e.g. bcrypt or sodium) in your security.yaml.
@@ -125,5 +142,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
+    }
+
+    public function getBalance(): ?float
+    {
+        return $this->balance;
+    }
+
+    public function setBalance(float $balance): self
+    {
+        $this->balance = $balance;
+
+        return $this;
     }
 }
