@@ -3,6 +3,7 @@
 namespace App\Tests;
 
 use App\DataFixtures\UserFixtures;
+use App\Entity\User;
 use JMS\Serializer\SerializerInterface;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -146,6 +147,15 @@ class ApiAuthControllerTest extends AbstractTest
         );
 
         self::assertNotEmpty($json['token']);
+
+        $entityManager = self::getEntityManager();
+        $newUser = $entityManager->getRepository(User::class)->findOneBy([
+            'email' => 'newuser@mail.ru',
+        ]);
+
+        self::assertNotNull($newUser);
+        self::assertEquals(0, $newUser->getBalance());
+        self::assertEquals(["ROLE_USER"], $newUser->getRoles());
     }
 
     public function testRegisterExistingUser(): void
