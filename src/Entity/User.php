@@ -5,42 +5,75 @@ namespace App\Entity;
 use App\Dto\UserDto;
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
+use OpenApi\Annotations as OA;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
- * @ORM\Entity(repositoryClass=UserRepository::class)
- * @ORM\Table(name="`billing_user`")
- * @UniqueEntity(fields={"email"}, message="Уже есть аккаунт с таким email")
+ *  @OA\Schema(
+ *     title="User",
+ *     description="User"
+ *  )
+ *  @ORM\Entity(repositoryClass=UserRepository::class)
+ *  @ORM\Table(name="`billing_user`")
+ *  @UniqueEntity(fields={"email"}, message="Уже есть аккаунт с таким email")
  */
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
+     *  @OA\Property(
+     *      format="int64",
+     *      title="Id",
+     *      description="Id"
+     *  )
+     *  @ORM\Id
+     *  @ORM\GeneratedValue
+     *  @ORM\Column(type="integer")
      */
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=180, unique=true)
+     *  @OA\Property(
+     *     format="email",
+     *     title="E-mail",
+     *     description="E-mail"
+     *  )
+     *  @ORM\Column(type="string", length=180, unique=true)
      */
     private $email;
 
     /**
-     * @ORM\Column(type="json")
+     * @OA\Property(
+     *      type="array",
+     *      @OA\Items(
+     *          type="string"
+     *      ),
+     *      title="Roles",
+     *      description="Roles"
+     *  )
+     *  @ORM\Column(type="json")
      */
     private $roles = [];
 
     /**
-     * @var string The hashed password
-     * @ORM\Column(type="string")
+     *  @OA\Property(
+     *      type="string",
+     *      title="Password",
+     *      description="Password"
+     *  )
+     *  @var string The hashed password
+     *  @ORM\Column(type="string")
      */
     private $password;
 
     /**
-     * @ORM\Column(type="float")
+     *  @OA\Property(
+     *      type="float",
+     *      title="Balance",
+     *      description="Balance"
+     *  )
+     *  @ORM\Column(type="float")
      */
     private $balance;
 
