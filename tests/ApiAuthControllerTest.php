@@ -2,7 +2,7 @@
 
 namespace App\Tests;
 
-use App\DataFixtures\UserFixtures;
+use App\DataFixtures\AppFixtures;
 use App\Entity\User;
 use JMS\Serializer\SerializerInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,7 +14,7 @@ class ApiAuthControllerTest extends AbstractTest
 
     public function getFixtures(): array
     {
-        return [UserFixtures::class];
+        return [AppFixtures::class];
     }
 
     protected function setUp(): void

@@ -5,7 +5,10 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Dto\UserDto;
 use App\Repository\UserRepository;
+use App\Service\PaymentService;
 use Doctrine\ORM\EntityManagerInterface;
+use Gesdinet\JWTRefreshTokenBundle\Generator\RefreshTokenGeneratorInterface;
+use Gesdinet\JWTRefreshTokenBundle\Model\RefreshTokenManagerInterface;
 use JMS\Serializer\SerializerInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use OpenApi\Annotations as OA;
@@ -106,6 +109,18 @@ class ApiAuthController extends AbstractController
      *              @OA\Property(
      *                  property="token",
      *                  type="string"
+     *              ),
+     *              @OA\Property(
+     *                  property="refresh_token",
+     *                  type="string"
+     *              ),
+     *              @OA\Property(
+     *                  property="roles",
+     *                  type="array",
+     *                  @OA\Items(
+     *                      type="string",
+     *                      example="ROLE_USER"
+     *                  )
      *              )
      *          )
      *      ),
@@ -146,7 +161,10 @@ class ApiAuthController extends AbstractController
         UserPasswordHasherInterface $hasher,
         UserRepository $userRepository,
         EntityManagerInterface $entityManager,
-        JWTTokenManagerInterface $JWTTokenManager
+        JWTTokenManagerInterface $JWTTokenManager,
+        RefreshTokenGeneratorInterface $refreshTokenGenerator,
+        RefreshTokenManagerInterface $refreshTokenManager,
+        PaymentService $paymentService
     ): Response {
         $userDto = $serializer->deserialize($request->getContent(), UserDto::class, 'json');
 
@@ -182,8 +200,17 @@ class ApiAuthController extends AbstractController
             $entityManager->persist($user);
             $entityManager->flush();
 
+            $paymentService->deposit($user, $_ENV['START_AMOUNT']);
+
+            $refreshToken = $refreshTokenGenerator->createForUserWithTtl($user, 86400);
+            $refreshToken->setUsername($user->getEmail());
+            $refreshToken->getRefreshToken();
+            $refreshToken->setValid((new \DateTime())->modify('+1 day'));
+            $refreshTokenManager->save($refreshToken);
+
             $data = [
                 'token' => $JWTTokenManager->create($user),
+                'refresh_token' => $refreshToken->getRefreshToken(),
                 'roles' => $user->getRoles(),
             ];
 

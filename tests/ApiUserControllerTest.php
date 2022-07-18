@@ -2,7 +2,7 @@
 
 namespace App\Tests;
 
-use App\DataFixtures\UserFixtures;
+use App\DataFixtures\AppFixtures;
 use App\Dto\UserDto;
 use App\Entity\User;
 use JMS\Serializer\SerializerInterface;
@@ -22,7 +22,7 @@ class ApiUserControllerTest extends AbstractTest
 
     protected function getFixtures(): array
     {
-        return [UserFixtures::class];
+        return [AppFixtures::class];
     }
 
     private function getToken(array $user): string
