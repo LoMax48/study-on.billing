@@ -83,6 +83,9 @@ class CourseController extends AbstractController
         return $response;
     }
 
+    /**
+     * @Route("/{code}/pay", name="app_course_pay", methods={"POST"})
+     */
     public function pay(
         string $code,
         CourseRepository $courseRepository,

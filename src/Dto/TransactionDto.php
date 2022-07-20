@@ -32,9 +32,9 @@ class TransactionDto
 
     /**
      * @Serializer\Type("string")
-     * @var string
+     * @var ?string
      */
-    public string $course;
+    public ?string $course;
 
     /**
      * @Serializer\Type("float")

@@ -123,7 +123,7 @@ class Transaction
         return $this->expiresTime;
     }
 
-    public function setExpiresTime(\DateTimeInterface $expiresTime): self
+    public function setExpiresTime(?\DateTimeInterface $expiresTime): self
     {
         $this->expiresTime = $expiresTime;
 

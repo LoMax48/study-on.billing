@@ -33,15 +33,15 @@ class TransactionController extends AbstractController
                 $course = $transaction->getCourse();
                 $expiresTime = null;
                 if (isset($course) && $course->getType() === 'rent') {
-                    $expiresTime = $transaction->getExpiresTime()->format('Y-m-d T H:i:s');
+                    $expiresTime = $transaction->getExpiresTime()->format('Y-m-d H:i:s');
                 }
                 $transactionDto = new TransactionDto();
                 $transactionDto->id = $transaction->getId();
-                $transactionDto->operationTime = $transaction->getOperationTime()->format('Y-m-d T H:i:s');
+                $transactionDto->operationTime = $transaction->getOperationTime()->format('Y-m-d H:i:s');
                 $transactionDto->expiresTime = $expiresTime;
                 $transactionDto->type = $transaction->getType();
                 $transactionDto->amount = $transaction->getAmount();
-                $transactionDto->course = $course ? $course->getId() : null;
+                $transactionDto->course = $course ? $course->getCode() : null;
 
                 $transactionsDto[] = $transactionDto;
             }
