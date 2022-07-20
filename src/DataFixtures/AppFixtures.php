@@ -13,7 +13,7 @@ class AppFixtures extends Fixture
     private UserPasswordHasherInterface $passwordHasher;
     private PaymentService $paymentService;
 
-    public function __construct(PaymentService $paymentService, UserPasswordHasherInterface $passwordHasher)
+    public function __construct(UserPasswordHasherInterface $passwordHasher, PaymentService $paymentService)
     {
         $this->paymentService = $paymentService;
         $this->passwordHasher = $passwordHasher;

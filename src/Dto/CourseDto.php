@@ -3,6 +3,7 @@
 namespace App\Dto;
 
 use JMS\Serializer\Annotation as Serializer;
+use OpenApi\Annotations as OA;
 
 class CourseDto
 {

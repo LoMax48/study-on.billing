@@ -22,6 +22,12 @@ security:
             jwt: ~
             refresh_jwt:
                 check_path: api/v1/token/refresh
+        api_token_refresh:
+            pattern: ^/api/v1/token/refresh
+            stateless: true
+            provider: app_user_provider
+            refresh_jwt:
+                check_path: /api/v1/token/refresh
         register:
             pattern: ^/api/v1/register
             stateless: true

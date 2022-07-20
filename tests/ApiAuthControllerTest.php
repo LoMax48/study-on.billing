@@ -4,23 +4,26 @@ namespace App\Tests;
 
 use App\DataFixtures\AppFixtures;
 use App\Entity\User;
-use JMS\Serializer\SerializerInterface;
+use App\Service\PaymentService;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class ApiAuthControllerTest extends AbstractTest
 {
     private string $startingPath = '/api/v1';
-    private SerializerInterface $serializer;
 
     public function getFixtures(): array
     {
-        return [AppFixtures::class];
+        return [
+            new AppFixtures(
+                self::getContainer()->get(UserPasswordHasherInterface::class),
+                self::getContainer()->get(PaymentService::class)
+            )];
     }
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->serializer = self::$kernel->getContainer()->get('jms_serializer');
     }
 
     public function testAuthSuccessfully(): void
@@ -154,7 +157,7 @@ class ApiAuthControllerTest extends AbstractTest
         ]);
 
         self::assertNotNull($newUser);
-        self::assertEquals(0, $newUser->getBalance());
+        self::assertEquals(5000.00, $newUser->getBalance());
         self::assertEquals(["ROLE_USER"], $newUser->getRoles());
     }
 

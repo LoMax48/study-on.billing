@@ -5,9 +5,10 @@ namespace App\Tests;
 use App\DataFixtures\AppFixtures;
 use App\Dto\UserDto;
 use App\Entity\User;
+use App\Service\PaymentService;
 use JMS\Serializer\SerializerInterface;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class ApiUserControllerTest extends AbstractTest
 {
@@ -22,7 +23,10 @@ class ApiUserControllerTest extends AbstractTest
 
     protected function getFixtures(): array
     {
-        return [AppFixtures::class];
+        return [new AppFixtures(
+            self::getContainer()->get(UserPasswordHasherInterface::class),
+            self::getContainer()->get(PaymentService::class)
+        )];
     }
 
     private function getToken(array $user): string

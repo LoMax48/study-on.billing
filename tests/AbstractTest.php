@@ -63,11 +63,11 @@ abstract class AbstractTest extends WebTestCase
     protected function loadFixtures(array $fixtures = [])
     {
         $loader = new Loader();
-        $hasher = static::getContainer()->get('security.user_password_hasher');
+        //$hasher = static::getContainer()->get('security.user_password_hasher');
 
         foreach ($fixtures as $fixture) {
             if (!\is_object($fixture)) {
-                $fixture = new $fixture($hasher);
+                $fixture = new $fixture();
             }
 
             if ($fixture instanceof ContainerAwareInterface) {
@@ -88,23 +88,36 @@ abstract class AbstractTest extends WebTestCase
         $this->failOnResponseStatusCheck($response, 'isOk', $message, $type);
     }
 
-    public function assertResponseRedirect(?Response $response = null, ?string $message = null, string $type = 'text/html')
-    {
+    public function assertResponseRedirect(
+        ?Response $response = null,
+        ?string $message = null,
+        string $type = 'text/html'
+    ) {
         $this->failOnResponseStatusCheck($response, 'isRedirect', $message, $type);
     }
 
-    public function assertResponseNotFound(?Response $response = null, ?string $message = null, string $type = 'text/html')
-    {
+    public function assertResponseNotFound(
+        ?Response $response = null,
+        ?string $message = null,
+        string $type = 'text/html'
+    ) {
         $this->failOnResponseStatusCheck($response, 'isNotFound', $message, $type);
     }
 
-    public function assertResponseForbidden(?Response $response = null, ?string $message = null, string $type = 'text/html')
-    {
+    public function assertResponseForbidden(
+        ?Response $response = null,
+        ?string $message = null,
+        string $type = 'text/html'
+    ) {
         $this->failOnResponseStatusCheck($response, 'isForbidden', $message, $type);
     }
 
-    public function assertResponseCode(int $expectedCode, ?Response $response = null, ?string $message = null, string $type = 'text/html')
-    {
+    public function assertResponseCode(
+        int $expectedCode,
+        ?Response $response = null,
+        ?string $message = null,
+        string $type = 'text/html'
+    ) {
         $this->failOnResponseStatusCheck($response, $expectedCode, $message, $type);
     }
     /**
@@ -130,7 +143,7 @@ abstract class AbstractTest extends WebTestCase
                         $add = ' FORMATTED';
                     }
                 }
-                $title = '[' . $response->getStatusCode() . ']' . $add .' - ' . $content;
+                $title = '[' . $response->getStatusCode() . ']' . $add . ' - ' . $content;
             } else {
                 $title = $crawler->filter('title')->text();
             }

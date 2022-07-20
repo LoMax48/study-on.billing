@@ -9,6 +9,7 @@ use App\Repository\CourseRepository;
 use App\Service\PaymentService;
 use Doctrine\ORM\EntityManagerInterface;
 use JMS\Serializer\SerializerInterface;
+use OpenApi\Annotations as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,6 +21,38 @@ use Symfony\Component\Routing\Annotation\Route;
 class CourseController extends AbstractController
 {
     /**
+     * @OA\Get(
+     *     path="/api/v1/courses",
+     *     tags={"Courses"},
+     *     summary="Получение всех курсов",
+     *     description="Получение всех курсов",
+     *     operationId="courses.index",
+     *     @OA\Response(
+     *          response="200",
+     *          description="Успешное получение курсов",
+     *          @OA\JsonContent(
+     *              type="array",
+     *              @OA\Items(
+     *                  @OA\Property(
+     *                      property="code",
+     *                      type="string",
+     *                      example="AREND199230SKLADS"
+     *                  ),
+     *                  @OA\Property(
+     *                      property="type",
+     *                      type="string",
+     *                      example="rent"
+     *                  ),
+     *                  @OA\Property(
+     *                      property="price",
+     *                      type="number",
+     *                      format="float",
+     *                      example="2000"
+     *                  ),
+     *              )
+     *          )
+     *     )
+     * )
      * @Route("", name="app_courses_index", methods={"GET"})
      */
     public function index(CourseRepository $courseRepository, SerializerInterface $serializer): Response
@@ -49,6 +82,56 @@ class CourseController extends AbstractController
     }
 
     /**
+     * @OA\Get(
+     *     path="/api/v1/courses/{code}",
+     *     tags={"Courses"},
+     *     summary="Получение данного курса",
+     *     description="Получение данного курса",
+     *     operationId="courses.show",
+     *     @OA\Response(
+     *         response=200,
+     *         description="Курс получен",
+     *         @OA\MediaType(
+     *             mediaType="application/json",
+     *             @OA\Schema(
+     *                 @OA\Property(
+     *                     property="code",
+     *                     type="string",
+     *                     example="AREND199230SKLADS",
+     *                 ),
+     *                 @OA\Property(
+     *                     property="type",
+     *                     type="string",
+     *                     example="rent",
+     *                 ),
+     *                 @OA\Property(
+     *                     property="price",
+     *                     type="number",
+     *                     example="2021",
+     *                 ),
+     *             ),
+     *        )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Данный курс не найден",
+     *         @OA\MediaType(
+     *             mediaType="application/json",
+     *             @OA\Schema(
+     *                 @OA\Property(
+     *                     property="code",
+     *                     type="string",
+     *                     example="404"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="message",
+     *                     type="string",
+     *                     example="Данный курс не найден"
+     *                 ),
+     *             ),
+     *        )
+     *     ),
+     * )
      * @Route("/{code}", name="app_course_show", methods={"GET"})
      */
     public function show(string $code, CourseRepository $courseRepository, SerializerInterface $serializer): Response
@@ -84,6 +167,93 @@ class CourseController extends AbstractController
     }
 
     /**
+     * @OA\Post(
+     *     tags={"Courses"},
+     *     path="/api/v1/courses/{code}/pay",
+     *     summary="Оплата курса",
+     *     description="Оплата курса",
+     *     security={
+     *         { "Bearer":{} },
+     *     },
+     *     @OA\Response(
+     *         response=200,
+     *         description="Курс куплен",
+     *         @OA\MediaType(
+     *             mediaType="application/json",
+     *             @OA\Schema(
+     *                 @OA\Property(
+     *                     property="success",
+     *                     type="boolean",
+     *                 ),
+     *                 @OA\Property(
+     *                     property="course_type",
+     *                     type="string",
+     *                 ),
+     *                 @OA\Property(
+     *                     property="expires_at",
+     *                     type="string",
+     *                 ),
+     *             ),
+     *        )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Данный курс не найден",
+     *         @OA\MediaType(
+     *             mediaType="application/json",
+     *             @OA\Schema(
+     *                 @OA\Property(
+     *                     property="code",
+     *                     type="string",
+     *                     example="404",
+     *                 ),
+     *                 @OA\Property(
+     *                     property="message",
+     *                     type="string",
+     *                     example="Данный курс не найден",
+     *                 ),
+     *             ),
+     *        )
+     *     ),
+     *     @OA\Response(
+     *         response=406,
+     *         description="У вас недостаточно средств",
+     *         @OA\MediaType(
+     *             mediaType="application/json",
+     *             @OA\Schema(
+     *                 @OA\Property(
+     *                     property="code",
+     *                     type="string",
+     *                     example="406",
+     *                 ),
+     *                 @OA\Property(
+     *                     property="message",
+     *                     type="string",
+     *                     example="На вашем счету недостаточно средств",
+     *                 ),
+     *             ),
+     *        )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Invalid JWT Token",
+     *         @OA\MediaType(
+     *             mediaType="application/json",
+     *             @OA\Schema(
+     *                 @OA\Property(
+     *                     property="code",
+     *                     type="string",
+     *                     example="401",
+     *                 ),
+     *                 @OA\Property(
+     *                     property="message",
+     *                     type="string",
+     *                     example="Invalid JWT Token",
+     *                 ),
+     *             ),
+     *         )
+     *     )
+     * )
      * @Route("/{code}/pay", name="app_course_pay", methods={"POST"})
      */
     public function pay(
@@ -144,6 +314,54 @@ class CourseController extends AbstractController
     }
 
     /**
+     * @OA\Post(
+     *     tags={"Courses"},
+     *     path="/api/v1/courses/new",
+     *     summary="Создание нового курса",
+     *     description="Создание нового курса",
+     *     operationId="courses.new",
+     *     security={
+     *         { "Bearer":{} },
+     *     },
+     *     @OA\Response(
+     *         response=201,
+     *         description="Курс успешно создан",
+     *         @OA\MediaType(
+     *             mediaType="application/json",
+     *             @OA\Schema(
+     *                 @OA\Property(
+     *                     property="code",
+     *                     type="string",
+     *                     example="201"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="success",
+     *                     type="bool",
+     *                     example="true"
+     *                 ),
+     *             ),
+     *        )
+     *     ),
+     *     @OA\Response(
+     *         response=405,
+     *         description="Курс с данным кодом уже существует в системе",
+     *         @OA\MediaType(
+     *             mediaType="application/json",
+     *             @OA\Schema(
+     *                 @OA\Property(
+     *                     property="code",
+     *                     type="string",
+     *                     example="405"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="message",
+     *                     type="string",
+     *                     example="Курс с данным кодом уже существует в системе"
+     *                 ),
+     *             ),
+     *        )
+     *     ),
+     * )
      * @Route("/new", name="app_course_new", methods={"POST"})
      */
     public function new(
@@ -153,6 +371,14 @@ class CourseController extends AbstractController
         SerializerInterface $serializer
     ): Response {
         try {
+            if (!$this->getUser() || !in_array('ROLE_SUPER_ADMIN', $this->getUser()->getRoles(), true)) {
+                $dataResponse = [
+                    'code' => Response::HTTP_FORBIDDEN,
+                    'message' => 'Доступ запрещён',
+                ];
+                throw new \Exception($dataResponse['message'], $dataResponse['code']);
+            }
+
             $courseDto = $serializer->deserialize($request->getContent(), CourseDto::class, 'json');
 
             $course = $courseRepository->findOneBy([
@@ -178,7 +404,7 @@ class CourseController extends AbstractController
             ];
         } catch (\Exception $exception) {
             $dataResponse = [
-                'code' => Response::HTTP_INTERNAL_SERVER_ERROR,
+                'code' => $exception->getCode(),
                 'message' => $exception->getMessage(),
             ];
         }
@@ -192,6 +418,72 @@ class CourseController extends AbstractController
     }
 
     /**
+     * @OA\Post(
+     *     tags={"Courses"},
+     *     path="/api/v1/courses/{code}/edit",
+     *     summary="Редактирование курса",
+     *     description="Редактирование курса",
+     *     security={
+     *         { "Bearer":{} },
+     *     },
+     *     @OA\Response(
+     *         response=200,
+     *         description="Курс изменен",
+     *         @OA\MediaType(
+     *             mediaType="application/json",
+     *             @OA\Schema(
+     *                 @OA\Property(
+     *                     property="code",
+     *                     type="string",
+     *                     example="200"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="success",
+     *                     type="bool",
+     *                     example="true"
+     *                 ),
+     *             ),
+     *        )
+     *     ),
+     *     @OA\Response(
+     *         response=405,
+     *         description="Курс с данным кодом уже существует в системе",
+     *         @OA\MediaType(
+     *             mediaType="application/json",
+     *             @OA\Schema(
+     *                 @OA\Property(
+     *                     property="code",
+     *                     type="string",
+     *                     example="405"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="message",
+     *                     type="string",
+     *                     example="Курс с данным кодом уже существует в системе"
+     *                 ),
+     *             ),
+     *        )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Данный курс в системе не найден",
+     *         @OA\MediaType(
+     *             mediaType="application/json",
+     *             @OA\Schema(
+     *                 @OA\Property(
+     *                     property="code",
+     *                     type="string",
+     *                     example="404"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="message",
+     *                     type="string",
+     *                     example="Данный курс в системе не найден"
+     *                 ),
+     *             ),
+     *         )
+     *     )
+     * )
      * @Route("/{code}/edit", name="app_course_edit", methods={"POST"})
      */
     public function edit(
@@ -202,6 +494,14 @@ class CourseController extends AbstractController
         SerializerInterface $serializer
     ): Response {
         try {
+            if (!$this->getUser() || !in_array('ROLE_SUPER_ADMIN', $this->getUser()->getRoles())) {
+                $dataResponse = [
+                    'code' => Response::HTTP_FORBIDDEN,
+                    'message' => 'Доступ запрещён',
+                ];
+                throw new \Exception($dataResponse['message'], $dataResponse['code']);
+            }
+
             $courseDto = $serializer->deserialize($request->getContent(), CourseDto::class, 'json');
 
             $course = $courseRepository->findOneBy(['code' => $code]);
@@ -231,7 +531,7 @@ class CourseController extends AbstractController
             ];
         } catch (\Exception $exception) {
             $dataResponse = [
-                'code' => Response::HTTP_INTERNAL_SERVER_ERROR,
+                'code' => $exception->getCode(),
                 'message' => $exception->getMessage(),
             ];
         }
