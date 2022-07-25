@@ -1,0 +1,42 @@
+name: Symfony
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+permissions:
+  contents: read
+  
+jobs:
+  symfony-tests:
+    runs-on: ubuntu-latest
+    steps:
+    #  To automatically get bug fixes and new Php versions for shivammathur/setup-php,
+    # change this to (see https://github.com/shivammathur/setup-php#bookmark-versioning):
+    # uses: shivammathur/setup-php@v2
+    - uses: shivammathur/setup-php@2cb9b829437ee246e9b3cac53555a39208ca6d28
+      with:
+        php-version: '7.4'
+    - uses: actions/checkout@v3
+    - name: Copy .env.test.local
+      run:  cp .env.test .env.test.local
+    - name: Docker-compose build
+      run: docker-compose build
+    - name: Docker-compose up
+      run: docker-compose up -d
+    - name: Install Dependencies
+      run: docker-compose exec php composer install --no-interaction
+    - name: Generate key-pair
+      run: docker-compose exec php bin/console lexik:jwt:generate-keypair
+    - name: Create Database
+      run: docker-compose exec php bin/console doctrine:database:create --env=test --no-interaction
+    - name: Load migrations
+      run: docker-compose exec php bin/console doctrine:migrations:migrate --env=test --no-interaction
+    - name: Load fixtures
+      run: docker-compose exec php bin/console doctrine:fixtures:load --env=test --no-interaction
+    - name: Execute tests (Unit and Feature tests) via PHPUnit
+      run: docker-compose exec php bin/phpunit
+    - name: Down docker-compose
+      run: docker-compose down
