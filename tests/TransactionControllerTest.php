@@ -9,7 +9,6 @@ use App\Service\PaymentService;
 use JMS\Serializer\SerializerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use function MongoDB\BSON\toRelaxedExtendedJSON;
 
 class TransactionControllerTest extends AbstractTest
 {
