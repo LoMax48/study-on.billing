@@ -78,4 +78,32 @@ class TransactionRepository extends ServiceEntityRepository
 
         return $queryBuilder->getQuery()->getResult();
     }
+
+    public function findSoonExpiredTransactions(User $user)
+    {
+        return $this->createQueryBuilder('t')
+            ->andWhere('t.billingUser = :user_id')
+            ->andWhere('t.type = 1')
+            ->andWhere('t.expiresTime BETWEEN :today AND :tomorrow')
+            ->setParameter('today', new \DateTimeImmutable())
+            ->setParameter('tomorrow', (new \DateTimeImmutable())->modify('+1 day'))
+            ->setParameter('user_id', $user->getId())
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function getPayStatisticPerMonth()
+    {
+        $dql = "
+            SELECT c.title, 
+                   (CASE WHEN c.type = 1 THEN 'Аренда' ELSE 'Покупка' END) as course_type, 
+                   COUNT(t.id) as transaction_count, 
+                   SUM(t.amount) as total_amount
+            FROM App\\Entity\\Transaction t JOIN App\\Entity\\Course c WITH t.course = c.id
+            WHERE t.type = 1 AND t.operationTime BETWEEN DATE_SUB(CURRENT_DATE(), 1, 'MONTH') AND CURRENT_DATE()
+            GROUP BY c.title, c.type
+        ";
+
+        return $this->_em->createQuery($dql)->getResult();
+    }
 }

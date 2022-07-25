@@ -1,0 +1,14 @@
+{% extends 'mail/mail.html.twig' %}
+
+{% block title %}
+    Окончание срока аренды
+{% endblock %}
+
+{% block body %}
+    <p>Уважаемый клиент! У вас есть курсы, срок аренды которых подходит к концу:</p>
+    <ol>
+        {% for transaction in transactions %}
+            <li>{{ transaction.course.title }} действует до {{ transaction.expiresTime|date('d.m.Y H:i') }}</li>
+        {% endfor %}
+    </ol>
+{% endblock %}

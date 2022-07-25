@@ -1,0 +1,43 @@
+{% extends 'mail/mail.html.twig' %}
+
+{% block title %}
+    Отчет об оплаченных курсах за период {{ startDate }} - {{ endDate }}
+{% endblock %}
+
+{% block body %}
+<style type="text/css">
+    .bordered {
+        border-color: grey;
+        border-style: solid;
+        border-width: 1px;
+        border-spacing: 0;
+    }
+    .centered {
+        text-align: center;
+    }
+</style>
+    <table class="bordered">
+        <thead>
+        <tr class="bordered">
+            <th class="bordered centered">Название курса<br></th>
+            <th class="bordered centered">Тип курса<br></th>
+            <th class="bordered centered">Число аренд/покупок<br></th>
+            <th class="bordered centered">Общая сумма<br></th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for transaction in transactions %}
+            <tr class="bordered">
+                <td class="bordered">{{ transaction.title }}</td>
+                <td class="bordered centered">{{ transaction.course_type }}</td>
+                <td class="bordered centered">{{ transaction.transaction_count }}</td>
+                <td class="bordered centered">{{ transaction.total_amount }}</td>
+            </tr>
+        {% endfor %}
+        <tr>
+            <td colspan="3" class="bordered">Всего</td>
+            <td class="bordered centered">{{ total }}</td>
+        </tr>
+        </tbody>
+    </table>
+{% endblock %}
