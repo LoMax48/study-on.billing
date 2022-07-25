@@ -24,7 +24,7 @@ jobs:
           # required
           POSTGRES_PASSWORD: pguser
           # optional (defaults to `5432`)
-          POSTGRES_PORT: 5432
+          POSTGRES_PORT: 5432/tcp
           # optional (defaults to `postgres`)
           POSTGRES_USER: pguser
         # Set health checks to wait until postgres has started
@@ -42,7 +42,7 @@ jobs:
         php-version: '8.0'
     - uses: actions/checkout@v3
     - name: Copy .env.test.local
-      run: php -r "file_exists('.env.test.ci') || copy('.env.test.ci', '.env.test.local');"
+      run: php -r "copy('.env.test.ci', '.env.test.local');"
     - name: Cache Composer packages
       id: composer-cache
       uses: actions/cache@v3
@@ -55,10 +55,12 @@ jobs:
       run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
     - name: Create Database
       run: |
+        echo $DATABASE_URL
+        echo DATABASE_URL
         php bin/console doctrine:database:create --env=test
         php bin/console doctrine:migrations:migrate --env=test
         php bin/console doctrine:fixtures:load --env=test
     - name: Execute tests (Unit and Feature tests) via PHPUnit
       env:
-        DATABASE_URL: postgresql://pguser:pguser@localhost:5432/study_on_billing
+        DATABASE_URL: postgresql://pguser:pguser@postgres:5432/study_on_billing
       run: vendor/bin/phpunit
