@@ -60,5 +60,5 @@ jobs:
         php bin/console doctrine:fixtures:load --env=test
     - name: Execute tests (Unit and Feature tests) via PHPUnit
       env:
-        DATABASE_URL: postgresql://pguser:pguser@postgres:5432/study_on_billing
+        DATABASE_URL: postgresql://pguser:pguser@localhost:5432/study_on_billing
       run: vendor/bin/phpunit
