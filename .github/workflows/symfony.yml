@@ -55,6 +55,8 @@ jobs:
       run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
     - name: Create Database
       run: |
+        echo $DATABASE_URL
+        echo DATABASE_URL
         php bin/console doctrine:database:create --env=test
         php bin/console doctrine:migrations:migrate --env=test
         php bin/console doctrine:fixtures:load --env=test
