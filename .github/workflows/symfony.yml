@@ -24,7 +24,7 @@ jobs:
           # required
           POSTGRES_PASSWORD: pguser
           # optional (defaults to `5432`)
-          POSTGRES_PORT: 5432
+          POSTGRES_PORT: 5432/tcp
           # optional (defaults to `postgres`)
           POSTGRES_USER: pguser
         # Set health checks to wait until postgres has started
